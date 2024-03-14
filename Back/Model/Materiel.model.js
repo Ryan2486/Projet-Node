@@ -9,41 +9,48 @@ const Materiel = function (materiel) {
 	this.NumMat = materiel.NumMat;
 	this.Design = materiel.Design;
 	this.Etat = materiel.Etat;
-	this.Qte = materiel.Qte;
+	this.Qte = parseInt(materiel.Qte);
 };
 
-Materiel.GetAll = (res) => {
-	let query = "SELECT * FROM materiel ";
-	// if (Date_entree) {
-	// 	query += `Date_entree  LIKE '%${Date_entree}% and'`;
-	// }
-	query += 'order by "Design" ASC';
-
-	pg.query(query, (err, result) => {
-		if (err) {
-			console.log("Erreur: ", err.message);
-			res(err, null);
-			return;
-		}
-		console.log("Materiel: ", result.rows);
-		res(null, result.rows);
-	});
+Materiel.GetAll = async (res) => {
+	
+	try {
+		const Materiels = await prisma.materiel.findMany();
+		console.log("Materiels :",Materiels);
+		  res(null,Materiels);
+	} catch (error) {
+		res("Erreur N°:"+error.code,null)
+	}
+	
 };
 
-Materiel.Add = (Materiel, result) => {
-	const query =
-		'INSERT INTO materiel ("NumMat", "Design", "Etat", "Qte") VALUES ($1, $2, $3, $4)';
-	const values = [Materiel.NumMat, Materiel.Design ,Materiel.Etat, Materiel.Qte];
+Materiel.Add = async (Materiel, result) => {
+	// const query =
+	// 	'INSERT INTO materiel ("NumMat", "Design", "Etat", "Qte") VALUES ($1, $2, $3, $4)';
+	// const values = [Materiel.NumMat, Materiel.Design ,Materiel.Etat, Materiel.Qte];
 
-	pg.query(query, values, (err, res) => {
-		if (err) {
-			console.error("Erreur lors de l'insertion :", err);
-            result(" "+err,null);
-		} else {
-			console.log("Insertion réussie :", res.rows[0]);
-            result(null, "Insertion réussie");
+	// pg.query(query, values, (err, res) => {
+	// 	if (err) {
+	// 		console.error("Erreur lors de l'insertion :", err);
+    //         result(" "+err,null);
+	// 	} else {
+	// 		console.log("Insertion réussie :", res.rows[0]);
+    //         result(null, "Insertion réussie");
+	// 	}
+	// });
+	try {
+		const rep = await prisma.materiel.create({ data:Materiel})
+		result(null,rep);
+	} catch (error) {
+		if(error.code==="P2002"){
+			result("Le N° du Materiel existe déjà dans la base de donnée",null);
 		}
-	});
+		else{
+			result("Erreur N°:"+error.code,null)
+		}
+		console.error(error);
+		
+	}
 };
 Materiel.update = (Materiel, res) => {
 	const updateQuery = `
