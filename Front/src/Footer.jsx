@@ -31,6 +31,7 @@ function App({ database }) {
 			<Text italic>Bon : {bon}</Text>
 			<Text italic>Mauvais : {mauvais}</Text>
 			<Text italic>Abimé : {abime}</Text>
+			<Text italic>Total : {abime+mauvais+bon}</Text>
 		</Flex>
 	);
 }
