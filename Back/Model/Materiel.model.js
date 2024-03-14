@@ -47,25 +47,33 @@ Materiel.update = async (Materiel, result) => {
 	}
 	
 };
-Materiel.delete = (Materiel, res) => {
-	const query = `
-    delete from materiel 
-    WHERE materiel."NumMat" = $1`;
-	console.log("4");
-	const values = [Materiel.NumMat];
-	pg.query(query, values, (err, result) => {
-		if (err) {
-			console.log("Error: ", err);
-			res(null, err);
-			return;
-		}
+Materiel.delete = async (Materiel, result) => {
+	// const query = `
+    // delete from materiel 
+    // WHERE materiel."NumMat" = $1`;
+	// console.log("4");
+	// const values = [Materiel.NumMat];
+	// pg.query(query, values, (err, result) => {
+	// 	if (err) {
+	// 		console.log("Error: ", err);
+	// 		res(null, err);
+	// 		return;
+	// 	}
 
-		if (res.affectedRows == 0) {
-			res("not_found", null);
-			return;
-		}
-		res(null, result);
-	});
+	// 	if (res.affectedRows == 0) {
+	// 		res("not_found", null);
+	// 		return;
+	// 	}
+	// 	res(null, result);
+	// });
+	try {
+		const rep = await prisma.materiel.delete({
+			where: { NumMat: Materiel.NumMat },
+		  })
+		  result(null, rep);
+	} catch (error) {
+		result("Erreur N°:" + error.code, null);
+	}
 };
 
 module.exports = Materiel;
