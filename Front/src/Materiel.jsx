@@ -1,7 +1,16 @@
 import { useState, useEffect } from "react";
-import { Table, Button, Flex, Modal, Descriptions, Form , notification} from "antd";
+import {
+	Table,
+	Button,
+	Flex,
+	Modal,
+	Descriptions,
+	Form,
+	notification,
+	Space,
+} from "antd";
 import { PlusCircleTwoTone } from "@ant-design/icons";
-import { Form_Modif,Form_Add } from "./Formulaire.jsx";
+import { Form_Modif, Form_Add } from "./Formulaire.jsx";
 import Footer from "./Footer.jsx";
 
 import axios from "axios";
@@ -55,7 +64,10 @@ function App() {
 	};
 	const ModifMat = async (modifiedObject) => {
 		try {
-			const result = await axios.put("http://localhost:8080/api/Materiel/Modif",modifiedObject);
+			const result = await axios.put(
+				"http://localhost:8080/api/Materiel/Modif",
+				modifiedObject
+			);
 			fetchData();
 		} catch (error) {
 			console.error("Erreur lors de la récupération des données:", error);
@@ -63,23 +75,28 @@ function App() {
 	};
 	const AddMat = async (NewMat) => {
 		try {
-			const result = await axios.post("http://localhost:8080/api/Materiel/",NewMat);
+			const result = await axios.post(
+				"http://localhost:8080/api/Materiel/",
+				NewMat
+			);
 			NotifSucAdd(NewMat);
 			fetchData();
 		} catch (error) {
-				// Le serveur a répondu avec un code d'erreur
-				console.error('Erreur de réponse:', error.response.data.message);
-				NotifErrAdd(NewMat,error.response.data.message);
+			// Le serveur a répondu avec un code d'erreur
+			console.error("Erreur de réponse:", error.response.data.message);
+			NotifErrAdd(NewMat, error.response.data.message);
 			// console.error("Erreur lors de la récupération des données:", error);
 			// NotifErrAdd(NewMat,error);
 		}
 	};
 	const RemoveMat = async (RemMat) => {
 		try {
-			const result = await axios.put("http://localhost:8080/api/Materiel/del", RemMat);
+			const result = await axios.put(
+				"http://localhost:8080/api/Materiel/del",
+				RemMat
+			);
 			fetchData();
 		} catch (error) {
-
 			console.error("Erreur lors de la récupération des données:", error);
 		}
 	};
@@ -87,9 +104,9 @@ function App() {
 	useEffect(() => {
 		fetchData();
 	}, []);
-	const showAdd =()=>{
+	const showAdd = () => {
 		setAdd(true);
-	}
+	};
 	const showModal = (Mat, btn) => {
 		SetSelectItem([
 			{
@@ -132,77 +149,114 @@ function App() {
 	};
 
 	const handleModif = () => {
-		form.validateFields()
-      .then(() => {
-        console.log('Tous les champs sont valides.');
-		setModif(false);
-		const ModifMatvar= form.getFieldsValue(true);
-		console.log(ModifMatvar);
-		ModifMat(ModifMatvar);
-		NotifSucModif(ModifMatvar);
-      })
-      .catch((errorInfo) => {
-        console.log('Certains champs ne sont pas valides :', errorInfo);
-      });
-		
+		form
+			.validateFields()
+			.then(() => {
+				console.log("Tous les champs sont valides.");
+				setModif(false);
+				const ModifMatvar = form.getFieldsValue(true);
+				console.log(ModifMatvar);
+				ModifMat(ModifMatvar);
+				NotifSucModif(ModifMatvar);
+			})
+			.catch((errorInfo) => {
+				console.log("Certains champs ne sont pas valides :", errorInfo);
+			});
 	};
 
 	const handleAdd = () => {
-		form2.validateFields()
-      .then(() => {
-        console.log('Tous les champs sont valides.');
-		setAdd(false);
-		console.log(form2.getFieldsValue(true));
-		const NewMat = {
-			...form2.getFieldsValue(true),
-			Qte: '0'
-		  };
-		  console.log(NewMat);
-		form2.resetFields();
-		AddMat(NewMat);
-      })
-      .catch((errorInfo) => {
-        console.log('Certains champs ne sont pas valides :', errorInfo);
-      });
-		
+		form2
+			.validateFields()
+			.then(() => {
+				console.log("Tous les champs sont valides.");
+				setAdd(false);
+				console.log(form2.getFieldsValue(true));
+				const NewMat = {
+					...form2.getFieldsValue(true),
+					Qte: "0",
+				};
+				console.log(NewMat);
+				form2.resetFields();
+				AddMat(NewMat);
+			})
+			.catch((errorInfo) => {
+				console.log("Certains champs ne sont pas valides :", errorInfo);
+			});
 	};
 	const remove = (Mat) => {
 		try {
-		RemoveMat(Mat);
-		NotifSucSupp(Mat);
-		} catch (error) {
-			
-		}
-		
+			RemoveMat(Mat);
+			NotifSucSupp(Mat);
+		} catch (error) {}
 	};
 	const NotifSucAdd = (NewMat) => {
 		notification["success"]({
-		  message: 'Ajout réussi',
-		  description: "Materiel N° "+NewMat.NumMat+" ajouter avec succès",
-		  duration: 3
+			message: "Ajout réussi",
+			description: "Materiel N° " + NewMat.NumMat + " ajouter avec succès",
+			duration: 3,
 		});
-	  };
-	  const NotifSucModif = (ModifMat) => {
+	};
+	const NotifSucModif = (ModifMat) => {
 		notification["success"]({
-		  message: 'Modification réussi',
-		  description: "Materiel N° "+ModifMat.NumMat+" modifier avec succès",
-		  duration: 3
+			message: "Modification réussi",
+			description: "Materiel N° " + ModifMat.NumMat + " modifier avec succès",
+			duration: 3,
 		});
-	  };
-	  const NotifSucSupp = (SuppMat) => {
+	};
+	const NotifSucSupp = (SuppMat) => {
 		notification["success"]({
-		  message: 'Modification réussi',
-		  description: "Materiel N° "+SuppMat.NumMat+" supprimer avec succès",
-		  duration: 3
+			message: "Modification réussi",
+			description: "Materiel N° " + SuppMat.NumMat + " supprimer avec succès",
+			duration: 3,
 		});
-	  };
-	  const NotifErrAdd = (NewMat, err) => {
+	};
+	const NotifErrAdd = (NewMat, err) => {
 		notification["error"]({
-		  message: "Erreur d'insertion",
-		  description: "Erreur lors de l'insertion du materiel N° "+NewMat.NumMat+","+err,
-		  duration: 3
+			message: "Erreur d'insertion",
+			description:
+				"Erreur lors de l'insertion du materiel N° " +
+				NewMat.NumMat +
+				"," +
+				err,
+			duration: 3,
 		});
-	  };
+	};
+	const getColumnSearchProps = (dataIndex) => ({
+		filterDropdown: ({
+			setSelectedKeys,
+			selectedKeys,
+			confirm,
+			clearFilters,
+		}) => (
+			<div style={{ padding: 8 }}>
+				<Input
+					placeholder={`Search ${dataIndex}`}
+					value={selectedKeys[0]}
+					onChange={(e) =>
+						setSelectedKeys(e.target.value ? [e.target.value] : [])
+					}
+					onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+					style={{ width: 188, marginBottom: 8, display: "block" }}
+				/>
+				<Space>
+					<Button
+						type="primary"
+						onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+						icon={<SearchOutlined />}
+						size="small"
+						style={{ width: 90 }}>
+						Search
+					</Button>
+					<Button
+						onClick={() => handleReset(clearFilters)}
+						size="small"
+						style={{ width: 90 }}>
+						Reset
+					</Button>
+				</Space>
+			</div>
+		),
+	});
 
 	const columns = [
 		{
@@ -222,12 +276,28 @@ function App() {
 			dataIndex: "Qte",
 			key: "Qte",
 			width: "10%",
+			sorter: (a, b) => a.Qte - b.Qte,
 		},
 		{
 			title: "Etat",
 			dataIndex: "Etat",
 			key: "Etat",
 			width: "10%",
+			filters: [
+				{
+					text: "Bon",
+					value: "Bon",
+				},
+				{
+					text: "Mauvaise",
+					value: "Mauvais",
+				},
+				{
+					text: "Abimé",
+					value: "Abime",
+				},
+			],
+			onFilter: (value, record) => record.Etat.indexOf(value) === 0,
 		},
 		{
 			title: "Action",
@@ -251,7 +321,7 @@ function App() {
 			),
 		},
 	];
-	const defaultFooter = () => <Footer database={Materiels}/>;
+	const defaultFooter = () => <Footer database={Materiels} />;
 
 	return (
 		<>
@@ -276,9 +346,8 @@ function App() {
 				bordered="true"
 				size="large"
 				footer={defaultFooter}
-				
 			/>
-			
+
 			<Modal
 				open={Details}
 				onOk={() => {
@@ -291,10 +360,24 @@ function App() {
 				<Descriptions title="Info" items={SelectItem} />
 			</Modal>
 
-			<Modal open={Modif} onOk={handleModif} onCancel={ () => {setModif(false);form.resetFields()}} width={750}>
+			<Modal
+				open={Modif}
+				onOk={handleModif}
+				onCancel={() => {
+					setModif(false);
+					form.resetFields();
+				}}
+				width={750}>
 				<Form_Modif form={form} fields={SelectItem} />
 			</Modal>
-			<Modal open={Add} onOk={(handleAdd)} onCancel={ () => {setAdd(false);form2.resetFields()}} width={750}>
+			<Modal
+				open={Add}
+				onOk={handleAdd}
+				onCancel={() => {
+					setAdd(false);
+					form2.resetFields();
+				}}
+				width={750}>
 				<Form_Add form={form2} />
 			</Modal>
 		</>
