@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
-import {
-	Table,
-	Button,
-	Flex,
-	Modal,
-	Descriptions,
-	Form,
-	notification,
-	Space,
-} from "antd";
 import { PlusCircleTwoTone } from "@ant-design/icons";
-import { Form_Modif, Form_Add } from "./Formulaire.jsx";
+import {
+	Button,
+	Descriptions,
+	Flex,
+	Form,
+	Modal,
+	Table,
+	notification,
+} from "antd";
+import { useEffect, useState } from "react";
+import Chart from "./Chart.jsx";
 import Footer from "./Footer.jsx";
+import { Form_Add, Form_Modif } from "./Formulaire.jsx";
 
 import axios from "axios";
 
@@ -64,7 +64,7 @@ function App() {
 	};
 	const ModifMat = async (modifiedObject) => {
 		try {
-			const result = await axios.put(
+			await axios.put(
 				"http://localhost:8080/api/Materiel/Modif",
 				modifiedObject
 			);
@@ -75,10 +75,7 @@ function App() {
 	};
 	const AddMat = async (NewMat) => {
 		try {
-			const result = await axios.post(
-				"http://localhost:8080/api/Materiel/",
-				NewMat
-			);
+			await axios.post("http://localhost:8080/api/Materiel/", NewMat);
 			NotifSucAdd(NewMat);
 			fetchData();
 		} catch (error) {
@@ -91,10 +88,7 @@ function App() {
 	};
 	const RemoveMat = async (RemMat) => {
 		try {
-			const result = await axios.put(
-				"http://localhost:8080/api/Materiel/del",
-				RemMat
-			);
+			await axios.put("http://localhost:8080/api/Materiel/del", RemMat);
 			fetchData();
 		} catch (error) {
 			console.error("Erreur lors de la récupération des données:", error);
@@ -187,7 +181,9 @@ function App() {
 		try {
 			RemoveMat(Mat);
 			NotifSucSupp(Mat);
-		} catch (error) {}
+		} catch (error) {
+			NotifErrSupp(Mat, error);
+		}
 	};
 	const NotifSucAdd = (NewMat) => {
 		notification["success"]({
@@ -210,6 +206,17 @@ function App() {
 			duration: 3,
 		});
 	};
+	const NotifErrSupp = (SuppMat, err) => {
+		notification["error"]({
+			message: "Erreur d'insertion",
+			description:
+				"Erreur lors de la suppression du materiel N° " +
+				SuppMat.NumMat +
+				"," +
+				err,
+			duration: 3,
+		});
+	};
 	const NotifErrAdd = (NewMat, err) => {
 		notification["error"]({
 			message: "Erreur d'insertion",
@@ -221,42 +228,61 @@ function App() {
 			duration: 3,
 		});
 	};
-	const getColumnSearchProps = (dataIndex) => ({
-		filterDropdown: ({
-			setSelectedKeys,
-			selectedKeys,
-			confirm,
-			clearFilters,
-		}) => (
-			<div style={{ padding: 8 }}>
-				<Input
-					placeholder={`Search ${dataIndex}`}
-					value={selectedKeys[0]}
-					onChange={(e) =>
-						setSelectedKeys(e.target.value ? [e.target.value] : [])
-					}
-					onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-					style={{ width: 188, marginBottom: 8, display: "block" }}
-				/>
-				<Space>
-					<Button
-						type="primary"
-						onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-						icon={<SearchOutlined />}
-						size="small"
-						style={{ width: 90 }}>
-						Search
-					</Button>
-					<Button
-						onClick={() => handleReset(clearFilters)}
-						size="small"
-						style={{ width: 90 }}>
-						Reset
-					</Button>
-				</Space>
-			</div>
-		),
-	});
+	// const getColumnSearchProps = (dataIndex) => ({
+	// 	filterDropdown: ({
+	// 		setSelectedKeys,
+	// 		selectedKeys,
+	// 		confirm,
+	// 		clearFilters,
+	// 	}) => (
+	// 		<div style={{ padding: 8 }}>
+	// 			<Input
+	// 				placeholder={`Search ${dataIndex}`}
+	// 				value={selectedKeys[0]}
+	// 				onChange={(e) =>
+	// 					setSelectedKeys(e.target.value ? [e.target.value] : [])
+	// 				}
+	// 				onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+	// 				style={{ width: 188, marginBottom: 8, display: "block" }}
+	// 			/>
+	// 			<Space>
+	// 				<Button
+	// 					type="primary"
+	// 					onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+	// 					icon={<SearchOutlined />}
+	// 					size="small"
+	// 					style={{ width: 90 }}>
+	// 					Search
+	// 				</Button>
+	// 				<Button
+	// 					onClick={() => handleReset(clearFilters)}
+	// 					size="small"
+	// 					style={{ width: 90 }}>
+	// 					Reset
+	// 				</Button>
+	// 			</Space>
+	// 		</div>
+	// 	),
+	// 	filterIcon: (filtered) => (
+	// 		<SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+	// 	),
+	// 	onFilterDropdownVisibleChange: (visible) => {
+	// 		if (visible) {
+	// 			setTimeout(() => searchInput.select());
+	// 		}
+	// 	},
+	// 	render: (text) =>
+	// 		searchedColumn === dataIndex ? (
+	// 			<Highlighter
+	// 				highlightStyle={{ backgroundColor: "#ffc069", padding: 0 }}
+	// 				searchWords={[searchText]}
+	// 				autoEscape
+	// 				textToHighlight={text.toString()}
+	// 			/>
+	// 		) : (
+	// 			text
+	// 		),
+	// });
 
 	const columns = [
 		{
@@ -294,7 +320,7 @@ function App() {
 				},
 				{
 					text: "Abimé",
-					value: "Abime",
+					value: "Abimé",
 				},
 			],
 			onFilter: (value, record) => record.Etat.indexOf(value) === 0,
@@ -347,6 +373,9 @@ function App() {
 				size="large"
 				footer={defaultFooter}
 			/>
+			<Flex align="center" vertical style={{ height: "500px" }}>
+				<Chart database={Materiels}></Chart>
+			</Flex>
 
 			<Modal
 				open={Details}

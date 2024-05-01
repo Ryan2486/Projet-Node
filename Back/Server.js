@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const os = require('os');
 
 const app = express();
 
@@ -13,7 +14,6 @@ app.use(cors(corsOptions));
 app.use(express.json());
 
 // parse requests of content-type - application/x-www-form-urlencoded
-app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 
 // simple route
@@ -25,6 +25,16 @@ require("./Routes/Materiel.routes.js")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}.`);
-});
+// app.listen(PORT,() => {
+// 	console.log(`Server is running on port ${PORT}.`);
+// });
+app.listen(PORT,() => {
+	const networkInterfaces = os.networkInterfaces();
+	Object.keys(networkInterfaces).forEach(interfaceName => {
+	  networkInterfaces[interfaceName].forEach(interface => {
+		if (interface.family === 'IPv4' && !interface.internal) {
+		  console.log(`Serveur Express en cours d'exécution sur http://${interface.address}:${PORT}`);
+		}
+	  });
+	});
+  });

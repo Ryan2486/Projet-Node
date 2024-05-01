@@ -14,6 +14,7 @@ const Materiel = function (materiel) {
 Materiel.GetAll = async (res) => {
 	try {
 		const Materiels = await prisma.materiel.findMany();
+		
 		console.log("Materiels :", Materiels);
 		res(null, Materiels);
 	} catch (error) {
